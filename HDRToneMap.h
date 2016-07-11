@@ -78,7 +78,8 @@ private:
     VBOPlane  *mPlane;
     VBOSphere *mSphere;
 
-    QMatrix4x4 ModelMatrixTeapot, ModelMatrixPlane, ModelMatrixTorus, ViewMatrix, ProjectionMatrix;
+    QMatrix4x4 ModelMatrixTeapot, ModelMatrixSphere, ViewMatrix, ProjectionMatrix;
+    QMatrix4x4 ModelMatrixBackPlane, ModelMatrixBotPlane, ModelMatrixTopPlane;
 
     //debug
     void printMatrix(const QMatrix4x4& mat);

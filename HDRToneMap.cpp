@@ -20,7 +20,7 @@ MyWindow::~MyWindow()
 }
 
 MyWindow::MyWindow()
-    : mProgram(0), currentTimeMs(0), currentTimeS(0), tPrev(0), angle(0.0)
+    : mProgram(0), currentTimeMs(0), currentTimeS(0), tPrev(0), angle(M_PI / 2.0f)
 {
     setSurfaceType(QWindow::OpenGLSurface);
     setFlags(Qt::Window | Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
@@ -129,7 +129,7 @@ void MyWindow::CreateVertexBuffer()
     mFuncs->glGenVertexArrays(1, &mVAOPlane);
     mFuncs->glBindVertexArray(mVAOPlane);
 
-    mPlane = new VBOPlane(50.0f, 50.0f, 1.0, 1.0);
+    mPlane = new VBOPlane(20.0f, 10.0f, 1.0, 1.0);
 
     // Create and populate the buffer objects
     unsigned int PlaneHandles[3];
@@ -235,16 +235,19 @@ void MyWindow::CreateVertexBuffer()
 
 void MyWindow::initMatrices()
 {
-    ModelMatrixTeapot.translate( 0.0f, 0.0f, -2.0f);
-    ModelMatrixTeapot.rotate(   45.0f, QVector3D(0.0f, 1.0f, 0.0f));
-    ModelMatrixTeapot.rotate(  -90.0f, QVector3D(1.0f, 0.0f, 0.0f));
+    ModelMatrixTeapot.translate( 3.0f, -5.0f, 1.5f);
+    ModelMatrixTeapot.rotate( -90.0f, QVector3D(1.0f, 0.0f, 0.0f));
 
-    ModelMatrixTorus.translate( -1.0f, 0.75f, 3.0f);
-    ModelMatrixTorus.rotate(  -90.0f, QVector3D(1.0f, 0.0f, 0.0f));
+    ModelMatrixSphere.translate( -3.0f, -3.0f, 2.0f);
+
+    ModelMatrixBackPlane.rotate(90.0f, QVector3D(1.0f, 0.0f, 0.0f));
+    ModelMatrixBotPlane.translate(0.0f, -5.0f, 0.0f);
+    ModelMatrixTopPlane.translate(0.0f,  5.0f, 0.0f);
+    ModelMatrixTopPlane.rotate(180.0f, 1.0f, 0.0f, 0.0f);
 
     //ModelMatrixPlane.translate(0.0f, -0.45f, 0.0f);
 
-    ViewMatrix.lookAt(QVector3D(5.0f, 5.0f, 7.5f), QVector3D(0.0f,0.75f,0.0f), QVector3D(0.0f,1.0f,0.0f));
+    ViewMatrix.lookAt(QVector3D(2.0f, 0.0f, 14.0f), QVector3D(0.0f,0.0f,0.0f), QVector3D(0.0f,1.0f,0.0f));
 }
 
 void MyWindow::resizeEvent(QResizeEvent *)
@@ -309,27 +312,26 @@ void MyWindow::pass1()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    QVector4D worldLight = QVector4D(0.0f, 0.0f, 0.0f, 1.0f);
+    QVector4D worldLight = QVector4D(0.0f, 4.0f, 2.5f, 1.0f);
 
     mProgram->bind();
     {
         mFuncs->glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &pass1Index);
 
-        mProgram->setUniformValue("Light.Position",  worldLight );
+        mProgram->setUniformValue("Light.Position",  ViewMatrix * worldLight );
         mProgram->setUniformValue("Light.Intensity", QVector3D(1.0f, 1.0f, 1.0f));
+
+        mProgram->setUniformValue("ViewNormalMatrix", ViewMatrix.normalMatrix());
+
+        mProgram->setUniformValue("Material.Kd", 0.4f, 0.4f, 0.9f);
+        mProgram->setUniformValue("Material.Ks", 1.0f, 1.0f, 1.0f);
+        mProgram->setUniformValue("Material.Ka", 0.2f, 0.2f, 0.2f);
+        mProgram->setUniformValue("Material.Shininess", 100.0f);
 
         QMatrix4x4 mv1 = ViewMatrix * ModelMatrixTeapot;
         mProgram->setUniformValue("ModelViewMatrix", mv1);
         mProgram->setUniformValue("NormalMatrix", mv1.normalMatrix());
         mProgram->setUniformValue("MVP", ProjectionMatrix * mv1);
-
-        mProgram->setUniformValue("Worldlight",       worldLight);
-        mProgram->setUniformValue("ViewNormalMatrix", ViewMatrix.normalMatrix());
-
-        mProgram->setUniformValue("Material.Kd", 0.9f, 0.5f, 0.3f);
-        mProgram->setUniformValue("Material.Ks", 0.95f, 0.95f, 0.95f);
-        mProgram->setUniformValue("Material.Ka", 0.9f * 0.3f, 0.5f * 0.3f, 0.3f * 0.3f);
-        mProgram->setUniformValue("Material.Shininess", 100.0f);       
 
         glDrawElements(GL_TRIANGLES, 6 * mTeapot->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
@@ -338,7 +340,7 @@ void MyWindow::pass1()
     }
     mProgram->release();
 
-    // *** Draw plane
+    // *** Draw planes
     mFuncs->glBindVertexArray(mVAOPlane);
 
     glEnableVertexAttribArray(0);
@@ -348,22 +350,35 @@ void MyWindow::pass1()
     {
         mFuncs->glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &pass1Index);
 
-        mProgram->setUniformValue("Light.Position",  worldLight );
+        mProgram->setUniformValue("Light.Position",  ViewMatrix * worldLight );
         mProgram->setUniformValue("Light.Intensity", QVector3D(1.0f, 1.0f, 1.0f));
 
-        QMatrix4x4 mv1 = ViewMatrix * ModelMatrixPlane;
-        mProgram->setUniformValue("ModelViewMatrix", mv1);
-        mProgram->setUniformValue("NormalMatrix", mv1.normalMatrix());
-        mProgram->setUniformValue("MVP", ProjectionMatrix * mv1);
-
-        mProgram->setUniformValue("Worldlight",       worldLight);
         mProgram->setUniformValue("ViewNormalMatrix", ViewMatrix.normalMatrix());
 
-        mProgram->setUniformValue("Material.Kd", 0.7f, 0.7f, 0.7f);
-        mProgram->setUniformValue("Material.Ks", 0.9f, 0.9f, 0.9f);
+        mProgram->setUniformValue("Material.Kd", 0.9f, 0.3f, 0.2f);
+        mProgram->setUniformValue("Material.Ks", 1.0f, 1.0f, 1.0f);
         mProgram->setUniformValue("Material.Ka", 0.2f, 0.2f, 0.2f);
-        mProgram->setUniformValue("Material.Shininess", 180.0f);
+        mProgram->setUniformValue("Material.Shininess", 100.0f);
 
+        // back plane
+        QMatrix4x4 mvback = ViewMatrix * ModelMatrixBackPlane;
+        mProgram->setUniformValue("ModelViewMatrix", mvback);
+        mProgram->setUniformValue("NormalMatrix", mvback.normalMatrix());
+        mProgram->setUniformValue("MVP", ProjectionMatrix * mvback);
+        glDrawElements(GL_TRIANGLES, 6 * mPlane->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
+
+        // Top plane
+        QMatrix4x4 mvtop = ViewMatrix * ModelMatrixTopPlane;
+        mProgram->setUniformValue("ModelViewMatrix", mvtop);
+        mProgram->setUniformValue("NormalMatrix", mvtop.normalMatrix());
+        mProgram->setUniformValue("MVP", ProjectionMatrix * mvtop);
+        glDrawElements(GL_TRIANGLES, 6 * mPlane->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
+
+        // Bot plane
+        QMatrix4x4 mvbot = ViewMatrix * ModelMatrixBotPlane;
+        mProgram->setUniformValue("ModelViewMatrix", mvbot);
+        mProgram->setUniformValue("NormalMatrix", mvbot.normalMatrix());
+        mProgram->setUniformValue("MVP", ProjectionMatrix * mvbot);
         glDrawElements(GL_TRIANGLES, 6 * mPlane->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
         glDisableVertexAttribArray(0);
@@ -381,20 +396,22 @@ void MyWindow::pass1()
     {
         mFuncs->glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &pass1Index);
 
-        mProgram->setUniformValue("Light.Position",  worldLight );
+        mProgram->setUniformValue("Light.Position",  ViewMatrix * worldLight );
         mProgram->setUniformValue("Light.Intensity", QVector3D(1.0f, 1.0f, 1.0f));
 
-        QMatrix4x4 mv1 = ViewMatrix * ModelMatrixTorus;
+        mProgram->setUniformValue("ViewNormalMatrix", ViewMatrix.normalMatrix());
+
+        mProgram->setUniformValue("Material.Kd", 0.4f, 0.9f, 0.4f);
+        mProgram->setUniformValue("Material.Ks", 1.0f, 1.0f, 1.0f);
+        mProgram->setUniformValue("Material.Ka", 0.2f, 0.2f, 0.2f);
+        mProgram->setUniformValue("Material.Shininess", 100.0f);
+
+        QMatrix4x4 mv1 = ViewMatrix * ModelMatrixSphere;
         mProgram->setUniformValue("ModelViewMatrix", mv1);
         mProgram->setUniformValue("NormalMatrix", mv1.normalMatrix());
         mProgram->setUniformValue("MVP", ProjectionMatrix * mv1);
         mProgram->setUniformValue("Worldlight",       worldLight);
         mProgram->setUniformValue("ViewNormalMatrix", ViewMatrix.normalMatrix());
-
-        mProgram->setUniformValue("Material.Kd", 0.9f, 0.5f, 0.3f);
-        mProgram->setUniformValue("Material.Ks", 0.95f, 0.95f, 0.95f);
-        mProgram->setUniformValue("Material.Ka", 0.9f * 0.3f, 0.5f * 0.3f, 0.3f * 0.3f);
-        mProgram->setUniformValue("Material.Shininess", 100.0f);
 
         glDrawElements(GL_TRIANGLES, mSphere->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
