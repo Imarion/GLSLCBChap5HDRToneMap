@@ -11,13 +11,15 @@ TEMPLATE = app
 SOURCES += main.cpp \
     HDRToneMap.cpp \
     teapot.cpp \
-    vboplane.cpp
+    vboplane.cpp \
+    vbosphere.cpp
 
 HEADERS += \
     HDRToneMap.h \
     teapotdata.h \
     teapot.h \
-    vboplane.h
+    vboplane.h \
+    vbosphere.h
 
 OTHER_FILES += \
     fshader.txt \

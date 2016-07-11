@@ -14,7 +14,7 @@
 
 #include "teapot.h"
 #include "vboplane.h"
-#include "torus.h"
+#include "vbosphere.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -67,16 +67,16 @@ private:
     bool   mUpdateSize;
     float  tPrev, angle;
 
-    GLuint mVAOTeapot, mVAOPlane, mVAOTorus, mVAOFSQuad, mVBO, mIBO, mFBOHandle, intermediateFBO;
+    GLuint mVAOTeapot, mVAOPlane, mVAOSphere, mVAOFSQuad, mVBO, mIBO, mFBOHandle, intermediateFBO;
     GLuint mPositionBufferHandle, mColorBufferHandle;
     GLuint mRotationMatrixLocation;
 
     GLuint pass1Index, pass2Index, pass3Index;
     GLuint renderTex, intermediateTex;
 
-    Teapot   *mTeapot;
-    VBOPlane *mPlane;
-    Torus    *mTorus;
+    Teapot    *mTeapot;
+    VBOPlane  *mPlane;
+    VBOSphere *mSphere;
 
     QMatrix4x4 ModelMatrixTeapot, ModelMatrixPlane, ModelMatrixTorus, ViewMatrix, ProjectionMatrix;
 

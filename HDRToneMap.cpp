@@ -160,38 +160,38 @@ void MyWindow::CreateVertexBuffer()
 
     mFuncs->glBindVertexArray(0);
 
-    // *** Torus
-    mFuncs->glGenVertexArrays(1, &mVAOTorus);
-    mFuncs->glBindVertexArray(mVAOTorus);
+    // *** Sphere
+    mFuncs->glGenVertexArrays(1, &mVAOSphere);
+    mFuncs->glBindVertexArray(mVAOSphere);
 
-    mTorus = new Torus(1.75f * 0.75f, 0.75f * 0.75f, 50, 50);
+    mSphere = new VBOSphere(2.0f, 50, 50);
 
     // Create and populate the buffer objects
-    unsigned int TorusHandles[3];
-    glGenBuffers(3, TorusHandles);
+    unsigned int SphereHandles[3];
+    glGenBuffers(3, SphereHandles);
 
-    glBindBuffer(GL_ARRAY_BUFFER, TorusHandles[0]);
-    glBufferData(GL_ARRAY_BUFFER, (3 * mTorus->getnVerts()) * sizeof(float), mTorus->getv(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, SphereHandles[0]);
+    glBufferData(GL_ARRAY_BUFFER, (3 * mSphere->getnVerts()) * sizeof(float), mSphere->getv(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, TorusHandles[1]);
-    glBufferData(GL_ARRAY_BUFFER, (3 * mTorus->getnVerts()) * sizeof(float), mTorus->getn(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, SphereHandles[1]);
+    glBufferData(GL_ARRAY_BUFFER, (3 * mSphere->getnVerts()) * sizeof(float), mSphere->getn(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TorusHandles[2]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * mTorus->getnFaces() * sizeof(unsigned int), mTorus->getel(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SphereHandles[2]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSphere->getnFaces() * sizeof(unsigned int), mSphere->getelems(), GL_STATIC_DRAW);
 
     // Setup the VAO
     // Vertex positions
-    mFuncs->glBindVertexBuffer(0, TorusHandles[0], 0, sizeof(GLfloat) * 3);
+    mFuncs->glBindVertexBuffer(0, SphereHandles[0], 0, sizeof(GLfloat) * 3);
     mFuncs->glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
     mFuncs->glVertexAttribBinding(0, 0);
 
     // Vertex normals
-    mFuncs->glBindVertexBuffer(1, TorusHandles[1], 0, sizeof(GLfloat) * 3);
+    mFuncs->glBindVertexBuffer(1, SphereHandles[1], 0, sizeof(GLfloat) * 3);
     mFuncs->glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
     mFuncs->glVertexAttribBinding(1, 1);
 
     // Indices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TorusHandles[2]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SphereHandles[2]);
 
 
     // *** Array for full-screen quad
@@ -371,8 +371,8 @@ void MyWindow::pass1()
     }
     mProgram->release();
 
-    // *** Draw torus
-    mFuncs->glBindVertexArray(mVAOTorus);
+    // *** Draw sphere
+    mFuncs->glBindVertexArray(mVAOSphere);
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -396,7 +396,7 @@ void MyWindow::pass1()
         mProgram->setUniformValue("Material.Ka", 0.9f * 0.3f, 0.5f * 0.3f, 0.3f * 0.3f);
         mProgram->setUniformValue("Material.Shininess", 100.0f);
 
-        glDrawElements(GL_TRIANGLES, 6 * mTorus->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
+        glDrawElements(GL_TRIANGLES, mSphere->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
