@@ -319,14 +319,22 @@ void MyWindow::pass1()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    QVector4D worldLight = QVector4D(0.0f, 4.0f, 2.5f, 1.0f);
+    QVector4D worldLightl = QVector4D(0.0f-7.0f, 4.0f, 2.5f, 1.0f);
+    QVector4D worldLightm = QVector4D(0.0f, 4.0f, 2.5f, 1.0f);
+    QVector4D worldLightr = QVector4D(0.0f+7.0f, 4.0f, 2.5f, 1.0f);
+    QVector3D intense     = QVector3D(1.0f, 1.0f, 1.0f);
 
     mProgram->bind();
     {
         mFuncs->glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &pass1Index);
 
-        mProgram->setUniformValue("Light.Position",  ViewMatrix * worldLight );
-        mProgram->setUniformValue("Light.Intensity", QVector3D(1.0f, 1.0f, 1.0f));
+        mProgram->setUniformValue("Lights[0].Position", ViewMatrix * worldLightl );
+        mProgram->setUniformValue("Lights[1].Position", ViewMatrix * worldLightm );
+        mProgram->setUniformValue("Lights[2].Position", ViewMatrix * worldLightr);
+
+        mProgram->setUniformValue("Lights[0].Intensity", intense );
+        mProgram->setUniformValue("Lights[1].Intensity", intense );
+        mProgram->setUniformValue("Lights[2].Intensity", intense );
 
         mProgram->setUniformValue("ViewNormalMatrix", ViewMatrix.normalMatrix());
 
@@ -357,8 +365,13 @@ void MyWindow::pass1()
     {
         mFuncs->glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &pass1Index);
 
-        mProgram->setUniformValue("Light.Position",  ViewMatrix * worldLight );
-        mProgram->setUniformValue("Light.Intensity", QVector3D(1.0f, 1.0f, 1.0f));
+        mProgram->setUniformValue("Lights[0].Position", ViewMatrix * worldLightl );
+        mProgram->setUniformValue("Lights[1].Position", ViewMatrix * worldLightm );
+        mProgram->setUniformValue("Lights[2].Position", ViewMatrix * worldLightr);
+
+        mProgram->setUniformValue("Lights[0].Intensity", intense );
+        mProgram->setUniformValue("Lights[1].Intensity", intense );
+        mProgram->setUniformValue("Lights[2].Intensity", intense );
 
         mProgram->setUniformValue("ViewNormalMatrix", ViewMatrix.normalMatrix());
 
@@ -386,6 +399,7 @@ void MyWindow::pass1()
         mProgram->setUniformValue("ModelViewMatrix", mvbot);
         mProgram->setUniformValue("NormalMatrix", mvbot.normalMatrix());
         mProgram->setUniformValue("MVP", ProjectionMatrix * mvbot);
+
         glDrawElements(GL_TRIANGLES, 6 * mPlane->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
         glDisableVertexAttribArray(0);
@@ -403,8 +417,13 @@ void MyWindow::pass1()
     {
         mFuncs->glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &pass1Index);
 
-        mProgram->setUniformValue("Light.Position",  ViewMatrix * worldLight );
-        mProgram->setUniformValue("Light.Intensity", QVector3D(1.0f, 1.0f, 1.0f));
+        mProgram->setUniformValue("Lights[0].Position", ViewMatrix * worldLightl );
+        mProgram->setUniformValue("Lights[1].Position", ViewMatrix * worldLightm );
+        mProgram->setUniformValue("Lights[2].Position", ViewMatrix * worldLightr);
+
+        mProgram->setUniformValue("Lights[0].Intensity", intense );
+        mProgram->setUniformValue("Lights[1].Intensity", intense );
+        mProgram->setUniformValue("Lights[2].Intensity", intense );
 
         mProgram->setUniformValue("ViewNormalMatrix", ViewMatrix.normalMatrix());
 
@@ -416,9 +435,7 @@ void MyWindow::pass1()
         QMatrix4x4 mv1 = ViewMatrix * ModelMatrixSphere;
         mProgram->setUniformValue("ModelViewMatrix", mv1);
         mProgram->setUniformValue("NormalMatrix", mv1.normalMatrix());
-        mProgram->setUniformValue("MVP", ProjectionMatrix * mv1);
-        mProgram->setUniformValue("Worldlight",       worldLight);
-        mProgram->setUniformValue("ViewNormalMatrix", ViewMatrix.normalMatrix());
+        mProgram->setUniformValue("MVP", ProjectionMatrix * mv1);                
 
         glDrawElements(GL_TRIANGLES, mSphere->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
