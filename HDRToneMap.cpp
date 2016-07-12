@@ -289,15 +289,22 @@ void MyWindow::render()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, mFBOHandle);
-    pass1();
+    if (displayMode)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, mFBOHandle);
+        pass1();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
-    pass2();
+        glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
+        pass2();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    pass3();
-
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        pass3();
+    }
+    else
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        pass1();
+    }
     mContext->swapBuffers(this);
 }
 
@@ -533,6 +540,9 @@ void MyWindow::keyPressEvent(QKeyEvent *keyEvent)
     switch(keyEvent->key())
     {
         case Qt::Key_P:
+            break;
+        case Qt::Key_O:
+            displayMode = !displayMode;
             break;
         case Qt::Key_Up:
             break;

@@ -67,6 +67,8 @@ private:
     bool   mUpdateSize;
     float  tPrev, angle;
 
+    bool   displayMode = false; // with (true) or without effect (false)
+
     GLuint mVAOTeapot, mVAOPlane, mVAOSphere, mVAOFSQuad, mVBO, mIBO, mFBOHandle, intermediateFBO;
     GLuint mPositionBufferHandle, mColorBufferHandle;
     GLuint mRotationMatrixLocation;
