@@ -2,6 +2,5 @@
     <qresource prefix="/">
         <file>fshader.txt</file>
         <file>vshader.txt</file>
-        <file>fshader_hdrtonemap.txt</file>
     </qresource>
 </RCC>

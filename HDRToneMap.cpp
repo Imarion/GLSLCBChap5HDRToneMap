@@ -77,7 +77,6 @@ void MyWindow::initialize()
     initShaders();
     pass1Index = mFuncs->glGetSubroutineIndex( mProgram->programId(), GL_FRAGMENT_SHADER, "pass1");
     pass2Index = mFuncs->glGetSubroutineIndex( mProgram->programId(), GL_FRAGMENT_SHADER, "pass2");
-    pass3Index = mFuncs->glGetSubroutineIndex( mProgram->programId(), GL_FRAGMENT_SHADER, "pass3");
 
     initMatrices();
     setupFBO();
@@ -97,8 +96,8 @@ void MyWindow::CreateVertexBuffer()
     mTeapot = new Teapot(14, transform);
 
     // Create and populate the buffer objects
-    unsigned int TeapotHandles[3];
-    glGenBuffers(3, TeapotHandles);
+    unsigned int TeapotHandles[4];
+    glGenBuffers(4, TeapotHandles);
 
     glBindBuffer(GL_ARRAY_BUFFER, TeapotHandles[0]);
     glBufferData(GL_ARRAY_BUFFER, (3 * mTeapot->getnVerts()) * sizeof(float), mTeapot->getv(), GL_STATIC_DRAW);
@@ -106,7 +105,10 @@ void MyWindow::CreateVertexBuffer()
     glBindBuffer(GL_ARRAY_BUFFER, TeapotHandles[1]);
     glBufferData(GL_ARRAY_BUFFER, (3 * mTeapot->getnVerts()) * sizeof(float), mTeapot->getn(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TeapotHandles[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, TeapotHandles[2]);
+    glBufferData(GL_ARRAY_BUFFER, (2 * mTeapot->getnVerts()) * sizeof(float), mTeapot->gettc(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TeapotHandles[3]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * mTeapot->getnFaces() * sizeof(unsigned int), mTeapot->getelems(), GL_STATIC_DRAW);
 
     // Setup the VAO
@@ -120,8 +122,13 @@ void MyWindow::CreateVertexBuffer()
     mFuncs->glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
     mFuncs->glVertexAttribBinding(1, 1);
 
+    // vertex texture coord
+    mFuncs->glBindVertexBuffer(2, TeapotHandles[2], 0, sizeof(GLfloat) * 2);
+    mFuncs->glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
+    mFuncs->glVertexAttribBinding(2, 2);
+
     // Indices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TeapotHandles[2]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TeapotHandles[3]);
 
     mFuncs->glBindVertexArray(0);
 
@@ -132,8 +139,8 @@ void MyWindow::CreateVertexBuffer()
     mPlane = new VBOPlane(20.0f, 10.0f, 1.0, 1.0);
 
     // Create and populate the buffer objects
-    unsigned int PlaneHandles[3];
-    glGenBuffers(3, PlaneHandles);
+    unsigned int PlaneHandles[4];
+    glGenBuffers(4, PlaneHandles);
 
     glBindBuffer(GL_ARRAY_BUFFER, PlaneHandles[0]);
     glBufferData(GL_ARRAY_BUFFER, (3 * mPlane->getnVerts()) * sizeof(float), mPlane->getv(), GL_STATIC_DRAW);
@@ -141,7 +148,10 @@ void MyWindow::CreateVertexBuffer()
     glBindBuffer(GL_ARRAY_BUFFER, PlaneHandles[1]);
     glBufferData(GL_ARRAY_BUFFER, (3 * mPlane->getnVerts()) * sizeof(float), mPlane->getn(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, PlaneHandles[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, TeapotHandles[2]);
+    glBufferData(GL_ARRAY_BUFFER, (2 * mPlane->getnVerts()) * sizeof(float), mPlane->gettc(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, PlaneHandles[3]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * mPlane->getnFaces() * sizeof(unsigned int), mPlane->getelems(), GL_STATIC_DRAW);
 
     // Setup the VAO
@@ -155,8 +165,13 @@ void MyWindow::CreateVertexBuffer()
     mFuncs->glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
     mFuncs->glVertexAttribBinding(1, 1);
 
+    // vertex texture coord
+    mFuncs->glBindVertexBuffer(2, PlaneHandles[2], 0, sizeof(GLfloat) * 2);
+    mFuncs->glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
+    mFuncs->glVertexAttribBinding(2, 2);
+
     // Indices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, PlaneHandles[2]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, PlaneHandles[3]);
 
     mFuncs->glBindVertexArray(0);
 
@@ -167,8 +182,8 @@ void MyWindow::CreateVertexBuffer()
     mSphere = new VBOSphere(2.0f, 50, 50);
 
     // Create and populate the buffer objects
-    unsigned int SphereHandles[3];
-    glGenBuffers(3, SphereHandles);
+    unsigned int SphereHandles[4];
+    glGenBuffers(4, SphereHandles);
 
     glBindBuffer(GL_ARRAY_BUFFER, SphereHandles[0]);
     glBufferData(GL_ARRAY_BUFFER, (3 * mSphere->getnVerts()) * sizeof(float), mSphere->getv(), GL_STATIC_DRAW);
@@ -176,7 +191,10 @@ void MyWindow::CreateVertexBuffer()
     glBindBuffer(GL_ARRAY_BUFFER, SphereHandles[1]);
     glBufferData(GL_ARRAY_BUFFER, (3 * mSphere->getnVerts()) * sizeof(float), mSphere->getn(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SphereHandles[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, TeapotHandles[2]);
+    glBufferData(GL_ARRAY_BUFFER, (2 * mPlane->getnVerts()) * sizeof(float), mSphere->gettc(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SphereHandles[3]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSphere->getnFaces() * sizeof(unsigned int), mSphere->getelems(), GL_STATIC_DRAW);
 
     // Setup the VAO
@@ -190,8 +208,13 @@ void MyWindow::CreateVertexBuffer()
     mFuncs->glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
     mFuncs->glVertexAttribBinding(1, 1);
 
+    // vertex texture coord
+    mFuncs->glBindVertexBuffer(2, SphereHandles[2], 0, sizeof(GLfloat) * 2);
+    mFuncs->glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
+    mFuncs->glVertexAttribBinding(2, 2);
+
     // Indices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SphereHandles[2]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SphereHandles[3]);
 
 
     // *** Array for full-screen quad
@@ -227,7 +250,7 @@ void MyWindow::CreateVertexBuffer()
     // Vertex texture coordinates
     mFuncs->glBindVertexBuffer(1, fsqhandle[1], 0, sizeof(GLfloat) * 2);
     mFuncs->glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 0);
-    mFuncs->glVertexAttribBinding(2, 2);
+    mFuncs->glVertexAttribBinding(2, 1);
 
     mFuncs->glBindVertexArray(0);
 
@@ -289,27 +312,18 @@ void MyWindow::render()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (displayMode)
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, mFBOHandle);
-        pass1();
+    glBindFramebuffer(GL_FRAMEBUFFER, mFBOHandle);
+    pass1();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
-        pass2();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    pass2();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        pass3();
-    }
-    else
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        pass1();
-    }
     mContext->swapBuffers(this);
 }
 
 void MyWindow::pass1()
 {   
+    glClearColor(0.5f,0.5f,0.5f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
@@ -448,10 +462,10 @@ void MyWindow::pass1()
 void MyWindow::pass2()
 {
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, renderTex);
+    //glBindTexture(GL_TEXTURE_2D, renderTex);
     glDisable(GL_DEPTH_TEST);
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
     mFuncs->glBindVertexArray(mVAOFSQuad);
 
@@ -462,6 +476,9 @@ void MyWindow::pass2()
     mProgram->bind();
     {
         mFuncs->glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &pass2Index);
+
+        mProgram->setUniformValue( "AveLum", computeLogAveLuminance() );
+        mProgram->setUniformValue( "DoToneMap", displayMode );
 
         QMatrix4x4 mv1 ,proj;
 
@@ -477,39 +494,6 @@ void MyWindow::pass2()
         glDisableVertexAttribArray(2);
     }
     mProgram->release();    
-}
-
-void MyWindow::pass3()
-{
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, intermediateTex);
-
-    mFuncs->glBindVertexArray(mVAOFSQuad);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-
-    mProgram->bind();
-    {
-        mFuncs->glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &pass3Index);
-
-        QMatrix4x4 mv1 ,proj;
-
-        mProgram->setUniformValue("ModelViewMatrix", mv1);
-        mProgram->setUniformValue("NormalMatrix", mv1.normalMatrix());
-        mProgram->setUniformValue("MVP", proj * mv1);
-
-        // Render the full-screen quad
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
-    }
-    mProgram->release();
 }
 
 void MyWindow::initShaders()
@@ -611,7 +595,7 @@ void MyWindow::setupFBO() {
     glGenTextures(1, &renderTex);
     glActiveTexture(GL_TEXTURE0);  // Use texture unit 0
     glBindTexture(GL_TEXTURE_2D, renderTex);
-    mFuncs->glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, this->width(), this->height());
+    mFuncs->glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, this->width(), this->height());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -629,33 +613,31 @@ void MyWindow::setupFBO() {
                               GL_RENDERBUFFER, depthBuf);
 
     // Set the targets for the fragment output variables
-    GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0};
-    mFuncs->glDrawBuffers(1, drawBuffers);
-
-    // Unbind the framebuffer, and revert to default framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // Generate and bind the intermediate framebuffer
-    glGenFramebuffers(1, &intermediateFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
-
-    // Create the texture object
-    glGenTextures(1, &intermediateTex);
-    glActiveTexture(GL_TEXTURE0);  // Use texture unit 0
-    glBindTexture(GL_TEXTURE_2D, intermediateTex);
-    mFuncs->glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, this->width(), this->height());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    // Bind the texture to the FBO
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, intermediateTex, 0);
-
-    // No depth buffer needed for this FBO
-
-    // Set the targets for the fragment output variables
-    mFuncs->glDrawBuffers(1, drawBuffers);
+    GLenum drawBuffers[] = {GL_NONE, GL_COLOR_ATTACHMENT0};
+    mFuncs->glDrawBuffers(2, drawBuffers);
 
     // Unbind the framebuffer, and revert to default framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+float MyWindow::computeLogAveLuminance()
+{
+    float *texData = new float[this->width()*this->height()*3];
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, renderTex);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, texData);
+    float sum = 0.0f;
+    for( int i = 0; i < this->width() * this->height(); i++ )
+    {
+        float lum = QVector3D::dotProduct(QVector3D(texData[i*3+0], texData[i*3+1], texData[i*3+2]), QVector3D(0.2126f, 0.7152f, 0.0722f) );
+        sum += logf( lum + 0.00001f );
+    }
+
+    //prog.setUniform( "AveLum", expf( sum / (width*height) ) );
+    //printf("(%f)\n", exp( sum / (width*height) ) );
+    delete [] texData;
+
+    qDebug() << "Ave luminance: " << expf(sum / (this->width()*this->height()));
+
+    return expf(sum / (this->width()*this->height()));
+}

@@ -23,8 +23,7 @@ HEADERS += \
 
 OTHER_FILES += \
     fshader.txt \
-    vshader.txt \
-    fshader_hdrtonemap.txt
+    vshader.txt
 
 RESOURCES += \
     shaders.qrc

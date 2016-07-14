@@ -47,10 +47,10 @@ private:
     void setupFBO();
 
     void pass1();
-    void pass2();
-    void pass3();
+    void pass2();    
 
     void PrepareTexture(GLenum TextureTarget, const QString& FileName, GLuint& TexObject, bool flip);
+    float computeLogAveLuminance();
 
 protected:
     void resizeEvent(QResizeEvent *);
@@ -67,13 +67,13 @@ private:
     bool   mUpdateSize;
     float  tPrev, angle;
 
-    bool   displayMode = false; // with (true) or without effect (false)
+    bool   displayMode = true; // with (true) or without effect (false)
 
     GLuint mVAOTeapot, mVAOPlane, mVAOSphere, mVAOFSQuad, mVBO, mIBO, mFBOHandle, intermediateFBO;
     GLuint mPositionBufferHandle, mColorBufferHandle;
     GLuint mRotationMatrixLocation;
 
-    GLuint pass1Index, pass2Index, pass3Index;
+    GLuint pass1Index, pass2Index;
     GLuint renderTex, intermediateTex;
 
     Teapot    *mTeapot;
